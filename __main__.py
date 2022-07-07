@@ -32,8 +32,9 @@ class Game:
         
         self.win = PWindow(tk, Map)
         
-        self.sv = sv = Label(tk, text='All Seems OK', font=('', 7), fg='white', bg='black')
+        self.sv = sv = Label(tk, font=('', 7), bg='black')
         sv.pack()
+        self.show_sv("Everything seems okay", "white")
         
         box = Frame(tk, bg='white')
         self.ful_ = Dial(box, 'Fuel (Km)', 'left', 75)
