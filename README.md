@@ -1,4 +1,4 @@
 # Minimal-Plane-2D
 
 ## How it looks
-![image](https://user-images.githubusercontent.com/93242673/177785202-2bc66b0c-1e44-4faa-a6fd-ab08699ed038.png)
+![image](https://user-images.githubusercontent.com/61447963/178445177-fc402824-2fef-4c7c-9efb-2136d215f4f1.png)
