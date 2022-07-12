@@ -1,3 +1,6 @@
+# Compiled Byte-Code Python Files
+__pycache__/
 
-__pycache__/plane.cpython-38.pyc
-__pycache__/plane.cpython-39.pyc
+# Editors
+.idea/
+.vscode/
