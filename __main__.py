@@ -259,7 +259,7 @@ class Scrn(TurtleScreen):
 
 class Compass(TurtleScreen):
     def __init__(self, master, side='left'):
-        self.cv = cv = Canvas(master, height=(50), width=70)
+        self.cv = cv = Canvas(master, height=50, width=70)
         cv.pack(side=side, anchor='n')
         super().__init__(cv, mode='logo')
         cv.configure(relief='solid', bg='black', height=60)
@@ -275,7 +275,7 @@ class Compass(TurtleScreen):
         t.goto(0, 0)
         t.seth(-plane['dir'])
         t.pencolor('red')
-        for _ in ['red', 'white', 'light blue', 'white']:
+        for _ in ['red', 'white', 'white', 'white']:
             t.pencolor(_)
             t.pu()
             t.forward(10)
@@ -319,6 +319,7 @@ class Vew(TurtleScreen):
         grt.pen(pendown=False, pencolor='grey20', outline=0)
     
     def show(self, plane: Plane):
+        self.tracer(0)
         b = plane['ang']
         self.tracer(0)
         pl = self.pl
@@ -363,16 +364,14 @@ class Dial(TurtleScreen):
         self.wt = wt = RawTurtle(self, visible=False)
         wt.pen(pendown=False, pencolor='black')
         wt.goto(0, -16)
-        wt.pd()
     
     def show(self, value, alert=False):
         value = int(value)
-        wt = self.wt
         self.tracer(0)
         
-        wt.clear()
-        wt.pencolor('red' if alert else 'black')
-        wt.write(value, align='center', font=('Segoe UI Semibold', 12, 'bold'))
+        self.wt.clear()
+        self.wt.pencolor('red' if alert else 'black')
+        self.wt.write(value, align='center', font=('Segoe UI Semibold', 12, 'bold'))
         self.tracer(1)
 
 
