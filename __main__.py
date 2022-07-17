@@ -91,7 +91,7 @@ class Game:
             
             if not self.messages: self.messages.append(('Good Flight!', 'green'))
             
-            self.win.show_messages(self.messages + [('A 47654745', 'blue'), ('B 4534757', 'green4'), ('C 2443657', 'cyan')])
+            self.win.show_messages(self.messages)
             
         except TclError or TurtleGraphicsError:
             print(str(pln['travel'] / 100), 'Km Traveled')
