@@ -17,6 +17,7 @@ Map = {
 
 class Game:
     def __init__(self):
+        self.messages = []
         self.pln = Plane()
         self.tk = tk = Tk()
         tk.wm_title('Plane Simulator')
@@ -36,7 +37,6 @@ class Game:
         
         self.sv = sv = Label(tk, font=('', 10), bg='black')
         sv.pack(pady=5)
-        self.show_sv("Everything seems okay", "white")
         
         box = Frame(tk, bg='white')
         self.ful_ = Dial(box, 'Fuel (Km)', 'left', 75)
@@ -58,7 +58,6 @@ class Game:
         tk.mainloop()
     
     def end(self, prob='Fuel ran off.'):
-        self.show_sv(prob.splitlines()[0], 'red')
         etk = Tk()
         etk.wm_title('Game Over')
         etk.minsize(200, 50)
@@ -85,17 +84,19 @@ class Game:
             self.fli_.show(int(pln['travel'] / 100))
             self.spd_.show(int(pln['power']),      alert=not pln['power'])
             
-            if pln['at'] < 18: self.show_sv('Terrain, Pull Up!', 'orange')
-            elif pln['fuel'] < 2500: self.show_sv('Foul is Running Low!', 'orange')
-            else: self.show_sv('Everything seems okay', 'white')
+            self.messages.clear()
+            if pln['at'] < 18: self.messages.append(('Terrain, Pull Up! (R)', 'orange2'))
+            if pln['fuel'] < 2500: self.messages.append(('Fuel is Running Low.', 'orange'))
+            if pln['power'] <= 0: self.messages.append(('Engines turned off!', 'red'))
+            
+            if not self.messages: self.messages.append(('Good Flight!', 'green'))
+            
+            self.win.show_messages(self.messages + [('A 47654745', 'blue'), ('B 4534757', 'green4'), ('C 2443657', 'cyan')])
             
         except TclError or TurtleGraphicsError:
             print(str(pln['travel'] / 100), 'Km Traveled')
             exit()
     
-    def show_sv(self, text, clr='white'):
-        self.sv.configure(text=text, fg=clr)
-
     def lean(self, x):
         self.pln['ang'] += x
     
@@ -127,6 +128,8 @@ class PWindow(TurtleScreen):
         self.grt1 = grt1 = RawTurtle(self, shape='square', visible=False)
         grt1.shapesize(.1)
         self.grt2 = RawTurtle(self, visible=False)
+        self.grt3 = RawTurtle(self, visible=False)
+        self.grt3.penup()
         self.zm = None
         self.scl = scl = RawTurtle(self, shape='square')
         scl.shapesize(outline=0)
@@ -149,13 +152,23 @@ class PWindow(TurtleScreen):
             pass
         self.tracer(1)
     
+    def show_messages(self, messages):
+        self.tracer(0)
+        self.grt3.goto(self.window_width()/2 - 20, -(self.window_height()/2 - 20))
+        self.grt3.clear()
+        for msg, color in messages:
+            self.grt3.color(color)
+            self.grt3.write(msg, align='right', font=('Consolas', 10, 'bold'))
+            self.grt3.sety(self.grt3.ycor() + 25)
+        self.tracer(1)
+    
     def _tracks(self, posses):
         t = self.grt2
         t.pu()
         t.home()
-        t.clear()
         t.pen(pendown=True, pencolor='gray90')
         n = 0
+        t.clear()
         for bnd, d_ in reversed(posses):
             t.back(d_ * self.zm)
             t.left(bnd)
@@ -178,7 +191,6 @@ class PWindow(TurtleScreen):
             t.forward(y * self.zm)
             t.right(90)
             t.forward(x * self.zm)
-            t.stamp()
             t.pencolor('gray')
             self._block()
             t.pu()
@@ -203,7 +215,7 @@ class PWindow(TurtleScreen):
     def _block(self):
         t = self.grt1
         was = t.isdown()
-        if not was: t.pendown()
+        t.pendown()
         for _ in range(2):
             t.forward(50 * self.zm)
             t.right(90)
@@ -312,7 +324,7 @@ class Vew(TurtleScreen):
         pl = self.pl
         try:
             pl.seth(b)
-            pl.color('white' if (not b) else '#F72119')
+            pl.color('white' if (not b) else 'orange')
             
             if b > 0:
                 a = 'left';   txt = ' ' * 8 + str(b) + ' -'
