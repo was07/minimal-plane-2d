@@ -21,19 +21,21 @@ class Game:
         self.tk = tk = Tk()
         tk.wm_title('Plane Simulator')
         tk.configure(bg='black')
-        # tk.attributes('-fullscreen', True)
         tk.bind('<Key-a>', lambda e: self.lean(-2))
         tk.bind('<Key-d>', lambda e: self.lean(+2))
         tk.bind('<Key-w>', lambda e: self.gear(+1))
         tk.bind('<Key-s>', lambda e: self.gear(-1))
+        
+        tk.bind('<Key-r>', lambda e: self.pull(+1))
+        tk.bind('<Key-f>', lambda e: self.pull(-1))
         
         tk.bind('<Key-z>', lambda e:        self.win.set_zoom(.15))
         tk.bind('<KeyRelease-z>', lambda e: self.win.set_zoom(1))
         
         self.win = PWindow(tk, Map)
         
-        self.sv = sv = Label(tk, font=('', 7), bg='black')
-        sv.pack()
+        self.sv = sv = Label(tk, font=('', 10), bg='black')
+        sv.pack(pady=5)
         self.show_sv("Everything seems okay", "white")
         
         box = Frame(tk, bg='white')
@@ -75,18 +77,20 @@ class Game:
         if resp is not None: return resp
         try:
             self.win.show(pln); self.vew.show(pln)
-            self.com.show(pln); self.scr.show(pln)
+            self.com.show(pln); self.scr.show(pln['hike'])
 
             self.ful_.show(int(pln['fuel'] / 100), alert=pln['fuel'] < 1000)
             self.att_.show(int(pln['at']),         alert=pln['at'] < 10)
+            self.scr.show(pln['hike'])
             self.fli_.show(int(pln['travel'] / 100))
             self.spd_.show(int(pln['power']),      alert=not pln['power'])
             
-            if pln['at'] < 10: self.show_sv('Terrain, Pull Up!', 'orange')
+            if pln['at'] < 18: self.show_sv('Terrain, Pull Up!', 'orange')
             elif pln['fuel'] < 2500: self.show_sv('Foul is Running Low!', 'orange')
+            else: self.show_sv('Everything seems okay', 'white')
             
         except TclError or TurtleGraphicsError:
-            print(str(pln['travel'] / 100) + ' Km')
+            print(str(pln['travel'] / 100), 'Km Traveled')
             exit()
     
     def show_sv(self, text, clr='white'):
@@ -97,6 +101,9 @@ class Game:
     
     def gear(self, x):
         self.pln['power'] += x
+    
+    def pull(self, x):
+        self.pln['hike'] += x
 
 
 class PWindow(TurtleScreen):
@@ -136,7 +143,7 @@ class PWindow(TurtleScreen):
             dum = self.dum
             dum.clear()
             dum.write(str(int(dr)) + '°' + '\n\n', align='center')
-            dum.pencolor('cyan' if not plane['ang'] else 'white')
+            dum.pencolor('yellow' if not plane['ang'] else 'white')
             self._tracks(plane.poses)
         except TurtleGraphicsError:
             pass
@@ -223,8 +230,19 @@ class Scrn(TurtleScreen):
         wt.pen(pendown=False, pencolor='white')
         wt.goto(0, -35)
     
-    def show(self, plane: Plane):
-        self.wt.write('↕ ' + str(plane['hike']) + '°', font=('', 7, ''), align='center')
+    def show(self, hike):
+        self.dum.settiltangle(hike)
+        if hike > 0:
+            self.dum.color("gray50")
+            self.wt.color("#39FF14")
+        elif not hike:
+            self.dum.color("white")
+            self.wt.color("white")
+        else:
+            self.dum.color("gray10")
+            self.wt.color("orange")
+        self.wt.clear()
+        self.wt.write('⦣ ' + str(hike) + '°', font=('', 7, ''), align='center')
 
 
 class Compass(TurtleScreen):
@@ -294,7 +312,7 @@ class Vew(TurtleScreen):
         pl = self.pl
         try:
             pl.seth(b)
-            pl.color('cyan' if (not b) else 'white')
+            pl.color('white' if (not b) else '#F72119')
             
             if b > 0:
                 a = 'left';   txt = ' ' * 8 + str(b) + ' -'
@@ -309,7 +327,7 @@ class Vew(TurtleScreen):
             bar = self.grt
             bar.clear()
             at = plane['at']
-            for i in [40, 20, 0, -1, -2]:
+            for i in [80, 60, 40, 20, 0, -1, -2]:
                 bar.sety(pl.ycor() - at + i)
                 bar.stamp()
         

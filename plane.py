@@ -2,7 +2,7 @@ class Plane:
     """ Plane Data Calculator for Simulation
     """
     def __init__(self):
-        self.cfg = {'ang': 0, 'hike': 1, 'power': 2, 'dir': 0, 'at': 10}
+        self.cfg = {'ang': 0, 'hike': 0, 'power': 2, 'dir': 0, 'at': 20}
         self.cts = {'travel': 0, 'fuel': 10000}
         self.poses = []  # history of all the positions the plane has been at
     
@@ -20,6 +20,10 @@ class Plane:
         if a >= 40: self['ang'] = 40
         elif a <= -40: self['ang'] = -40
         
+        # not letting hike get out of -20-20
+        if self['hike'] >= 20: self['hike'] = 20
+        elif self['hike'] <= -20: self['hike'] = -20
+        
         # not letting power get of 0-5 (decreasing attitude if power is 0)
         if p < 1: self['power'] = 0; self['at'] -= .1
         elif 5 < p: self['power'] = 5
@@ -30,6 +34,7 @@ class Plane:
         elif d < 0: self['dir'] = 360 + d
 
         self.poses.append((a / 30, self['power']))
-        self['at'] += self['hike']/100
+        if self['power'] > 0:
+            self['at'] += self['hike']/100
         self.cts['travel'] += self['power']/3
         self.cts['fuel'] -= self['power']/3
