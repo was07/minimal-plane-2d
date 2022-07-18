@@ -12,7 +12,7 @@ class Plane:
     
     def step(self):
         if self['fuel'] <= 0: return 'Fuel Ran Off'
-        elif self['at'] <= 0: return 'Touch Down\nPlane Leaned and Crashed Into Ground'
+        elif self['at'] <= 1: return 'Touch Down\nPlane Leaned and Crashed Into Ground'
         
         a, p, d = self['ang'], self['power'], self['dir']
         
@@ -32,6 +32,10 @@ class Plane:
         # Not letting dir get out of 0-360
         if d > 360: self['dir'] -= 360
         elif d < 0: self['dir'] = 360 + d
+        
+        # Not letting at get out of 1-70
+        if self['at'] > 70: self['at'] = 70
+        elif self['at'] < 1: self['at'] = 1
 
         self.poses.append((a / 30, self['power']))
         if self['power'] > 0:
