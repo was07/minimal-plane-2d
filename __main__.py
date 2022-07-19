@@ -129,7 +129,7 @@ class PWindow(TurtleScreen):
         self.grt3 = RawTurtle(self, visible=False)
         self.grt3.penup()
         self.scl = scl = RawTurtle(self, shape='square')
-        scl.shapesize(outline=0)
+        scl.shapesize(5, .1, outline=0)
         scl.pen(pendown=False, pencolor='gray95')
         scl.goto(0, 195)
         
